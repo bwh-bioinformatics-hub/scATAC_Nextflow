@@ -6,15 +6,23 @@ Details and Explanation coming soon...
 ## Requirements
 
 ```
-To add
+Installation
+This package can be installed from Github using the remotes package.
+
+You may first need to register your GitHub PAT, as this is a private repository.
+
+Sys.setenv(GITHUB_PAT = "your-access-token-here")
+remotes::install_github("bwh-bioinformatics-hub/scATAC_Seq_Pipeline")
+```
+# Install Nextflow
+```
+wget -qO- https://get.nextflow.io | bash
+```
+Make the binary executable on your system by running
+```
+chmod +x nextflow
 ```
 
-## Installation
-
-To Add
-```
-To Add
-```
 ## Test Data
 
 
