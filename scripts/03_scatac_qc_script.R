@@ -1,7 +1,7 @@
 library(optparse)
 
 option_list <- list(
-  make_option(opt_str = c("-s","--in_sample"),
+  make_option(opt_str = c("-s","--sample_id"),
               type = "character",
               default = NULL,
               help = "Batch identifier",
@@ -37,7 +37,7 @@ opt_parser <- OptionParser(option_list = option_list)
 
 args <- parse_args(opt_parser)
 
-if(is.null(args$in_sample)) {
+if(is.null(args$sample_id)) {
   print_help(opt_parser)
   stop("No parameters supplied.")
 }
@@ -50,7 +50,7 @@ rmd_path <- file.path(args$out_dir,
                       paste0(args$in_sample,
                              "_scatac_seq_qc_report_generator.Rmd"))
 
-file.copy(system.file("rmarkdown/scatac_seq_qc_report_generator.Rmd", package = "ATACSeqPipeline"),
+file.copy(system.file("rmarkdown/scatac_seq_qc_report_generator.Rmd", package = "scATACSeqPipeline"),
           rmd_path,
           overwrite = TRUE)
 
