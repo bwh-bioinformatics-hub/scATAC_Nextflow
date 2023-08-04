@@ -18,7 +18,7 @@ Channel
     .map { row ->  row.sample_id }
     .set { sample_id_ch }
 
-(sample,samples,sample_id,sid,sampleid,id,sam_id) = sample_id_ch.into(7)
+(sample,samples,sample_id,sid,sampleid,id) = sample_id_ch.into(6)
 
 
 println """\
@@ -92,7 +92,7 @@ process CrossPlatform {
       publishDir (
         path: "${params.outdir}",
         mode: 'copy',
-        overwrite: 'false',
+        overwrite: 'true',
   )	
 
   input:
@@ -100,7 +100,7 @@ process CrossPlatform {
   each samples
 
   output:
-  path("${samples}/atac_qc/*") into atac_qc
+  path("${samples}/atac_qc") into atac_qc
 
   script:
   """
@@ -114,40 +114,58 @@ process CrossPlatform {
   -q TRUE \
   -d ${samples}/atac_qc/ \
   -o ${samples}/atac_qc/${samples}_qc_report.html
-  
-  Rscript ${baseDir}/scripts/03_scatac_qc_script.R \ -s ${samples} \
-  -m 'scatac' \
-  -i ${baseDir}/results/${samples}/ \
-  -k ${params.samples_csv} \
-  -d ${samples}/atac_qc/\
-  -o ${samples}/atac_qc/${samples}_atac_qcreport.html
-  
   """
 }
 
+process qc {
+
+  publishDir(
+    path: "${params.outdir}/${id}/qc_report",
+    mode: 'copy',
+    overwrite: 'true'
+  )
+
+  input:
+  path(qc) from atac_qc.collect()
+  each id 
+  output:
+  path("${id}_atac_qcreport.html") into qc_report
+
+  script:
+  """
+  Rscript ${baseDir}/scripts/03_scatac_qc_script.R \ 
+  -s ${id} \
+  -m 'scatac' \
+  -i ${baseDir}/results/${id}/ \
+  -k ${params.samples_csv} \
+  -d . \
+  -o ${id}_atac_qcreport.html
+  """
+
+}
   process filter_frags {
-    publishDir (
-        path: "${params.outdir}/${sid}/atac_qc/",
+
+        publishDir (
+        path: "${params.outdir}",
         mode: 'copy',
         overwrite: 'true',
   )	
 
     input:
-
-    path(report) from atac_qc.collect()
     each sid
+    path(q) from qc_report.collect()
 
     output:
-    file("${sid}_filtered_fragments.tsv.gz") into filtered_frags
+    path("${sid}/atac_qc/*") into filtered_frags
 
     script:
     """
     bash ${baseDir}/scripts/04_filter_fragments.sh \
-    -i /mnt/data0/projects/biohub/development/scATAC/nextflow_development/data/BN1848SN/outs/atac_fragments.tsv.gz \
+    -i ${baseDir}/results/${sid}/outs/atac_fragments.tsv.gz \
     -m ${baseDir}/results/${sid}/atac_qc/${sid}_filtered_metadata.csv.gz \
     -j 32 \
-    -o . \
-    -t atac_qc/filtering_temp/ \
+    -o ${sid}/atac_qc/ \
+    -t filtering_temp/ \
     -s ${sid}
     """
   }
@@ -157,7 +175,7 @@ process CrossPlatform {
         publishDir (
         path: "${params.outdir}",
         mode: 'copy',
-        overwrite: 'false',
+        overwrite: 'true',
   )	
 
   input: 
@@ -181,29 +199,3 @@ process CrossPlatform {
   -s ${sampleid}
   """
  }
-
- process assemble_atac_frags {
-
-  publishDir (
-  path: "${params.outdir}",
-  mode: 'copy',
-  overwrite: 'false',
-  )	
-
-  input:
-  each sam_id
-  path(processed) from post_processed.collect()
-
-  output:
-  path("${sam_id}_qc_report.html") into assembled
-  """
-  Rscript ${baseDir}/scripts/06_run_assemble_atac_outputs.R \
-  -p ${baseDir}/results/${sam_id}/postprocessed \
-  -f ${baseDir}/results/${sam_id}/atac_qc/${sam_id}_filtered_fragments.tsv.gz \
-  -m ${baseDir}/results/${sam_id}/atac_qc/${sam_id}_filtered_metadata.csv.gz \
-  -g hg38 \
-  -d . \
-  -o ${sam_id}_qc_report.html
-  """
- }
-
