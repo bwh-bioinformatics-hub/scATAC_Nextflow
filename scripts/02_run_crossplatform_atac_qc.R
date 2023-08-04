@@ -69,7 +69,7 @@ if(is.null(args$out_html)) {
 
 rmd_loc <- "02_crossplatform_atac_qc.Rmd"
 
-file.copy(system.file("rmarkdown/02_crossplatform_atac_qc.Rmd", package = "ATACSeqPipeline"),
+file.copy(system.file("rmarkdown/02_crossplatform_atac_qc.Rmd", package = "scATAC_Seq_Pipeline"),
           rmd_loc,
           overwrite = TRUE)
 
