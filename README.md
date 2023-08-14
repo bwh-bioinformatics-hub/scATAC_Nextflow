@@ -23,6 +23,10 @@ Make the binary executable on your system by running
 chmod +x nextflow
 ```
 
+```
+<img src="https://github.com/bwh-bioinformatics-hub/scATAC_Nextflow/blob/main/example_samplesheet.png" width=50% height=50%>
+```
+
 ## Test Data
 
 
