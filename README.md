@@ -23,7 +23,11 @@ Make the binary executable on your system by running
 chmod +x nextflow
 ```
 
+
+# Metadata Samplesheet example below:
 <img src="https://github.com/bwh-bioinformatics-hub/scATAC_Nextflow/blob/main/example_samplesheet.png" width=125% height=90%>
+
+The only column that is a requirement to run the nextflow pipeline is the "Sample" column. 
 
 ## Test Data
 
