@@ -15,7 +15,7 @@ nextflow.enable.dsl=1
 Channel
     .fromPath( params.samples_csv )
     .splitCsv( header: true, sep: ',' )
-    .map { row ->  row.Sample }
+    .map { row ->  row.Sample_ID }
     .set { sample_id_ch }
 
 (sample,samples,sample_id,sid,sampleid,id) = sample_id_ch.into(6)
