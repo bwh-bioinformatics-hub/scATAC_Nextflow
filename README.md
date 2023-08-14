@@ -29,7 +29,7 @@ chmod +x nextflow
 
 The only column that is a requirement to run the nextflow pipeline is the "Sample" column. 
 
-## Test Data
+## Containerization
 
 
 [Return to Contents](#contents)
